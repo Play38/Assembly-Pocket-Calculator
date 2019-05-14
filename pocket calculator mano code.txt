@@ -1,0 +1,1028 @@
+//By Ofir Cohen 307923615
+//And Omer Guttman 313432213
+
+//main
+		LDA	IntroA
+		BSA	Puts	
+Mstart,		BSA	Opfunc
+STA	op
+		ADD	MinusX		//
+		SZA			//
+		BUN	ContinueM	//
+		BUN	EndM		//
+ContinueM,	LDA	Mfirst
+BSA	getnumber	//
+		STA	num1		//
+		BSA	PUSH
+		LDA	Msecond
+		BSA	getnumber	//
+		STA	num2		//
+		BSA	PUSH
+		
+		LDA	op		//
+		ADD	minusplus	//
+		SZA
+		BUN	Next1
+		BSA	ADDFUNC	
+		BUN	Mstart
+Next1,		LDA	op		//
+		ADD	minusminus	//
+		SZA
+		BUN	Next2
+		BSA	SUBFUNC	
+		BUN	Mstart
+Next2,		LDA	op		//
+		ADD	minusmulti	//
+		SZA
+		BUN	Next3
+		BSA	MULTFUNC
+		BUN	Mstart
+Next3,		BSA	DEVFUNC
+		CLA			//	FOR CORRECTING SOMETHING
+		BUN	Mstart
+					//
+EndM,		LDA	ByeA		//
+		BSA	Puts		//
+		HLT
+
+
+//main
+
+op,		HEX	0		//
+num1,		DEC	0		//
+num2,		DEC	0		//
+minusplus,	HEX	FFD5		//
+minusminus,	HEX	FFD3		//
+minusmulti,	HEX	FFD6		//
+minusdivi,	HEX	FFD1		//
+MinusX,		HEX	FFA8
+Mfirst,		DEC	0
+Msecond,		DEC	1
+
+//
+
+
+
+
+	
+
+
+
+
+//output an Op, output also an error if the input is not valid
+Opfunc,		HEX	0
+OPstart,		LDA	opprint
+		BSA	Puts				
+CLA
+		STA	OPflag
+Input_Loop1,	SKI 			// Repeat
+BUN 	Input_Loop1	// Until (FGI == 1) i.e. i/p available at KB
+		INP			//
+EchoM, 		SKO 			// 		Repeat	
+BUN 	EchoM		// 		Until (FGO == 0) i.e. i/p available at KB	
+OUT			//
+STA	Optemp
+ADD	Lminusplus
+SZA
+BUN 	Lnext
+BUN	Continueop
+Lnext,		LDA	Optemp
+ADD	Lminusminus
+SZA
+BUN 	Lnext1
+BUN	Continueop
+Lnext1,		LDA	Optemp
+ADD	Lminusmulti
+SZA
+BUN 	Lnext2
+BUN	Continueop
+Lnext2,		LDA	Optemp
+ADD	Lminusdivi
+SZA
+BUN 	Lnext3
+BUN	Continueop
+Lnext3,		LDA	Optemp
+ADD	LMinusX
+SZA
+BUN 	Lreloop
+BUN	Continueop
+Lreloop,		ISZ	OPflag
+Continueop,	SKI 			// Repeat
+BUN 	Continueop	// Until (FGI == 1) i.e. i/p available at KB
+		INP			//
+EchoM1, 		SKO 			// 		Repeat	
+BUN 	EchoM1		// 		Until (FGO == 0) i.e. i/p available at KB	
+OUT	
+		CMA
+		INC
+		ADD	MCR
+		SZA
+		BUN	PreContinueop
+		BUN	EndOP
+PreContinueop,	ISZ	OPflag
+		BUN	Continueop	
+	
+
+
+EndOP,		LDA	OPflag
+		SZA
+		BUN	OPerror
+		BUN	OPgood
+OPerror,		LDA	OPerror_print
+		BSA	Puts
+		BUN	OPstart	
+OPgood,		LDA	Optemp
+		BUN	Opfunc I		
+
+
+
+
+
+//Opfunc
+Optemp,		DEC	0		//
+Optemp2,	DEC	0		//
+MCR,		HEX	D		//
+OPflag,		DEC	0		//
+Lminusplus,	HEX	FFD5		//
+Lminusminus,	HEX	FFD3		//
+Lminusmulti,	HEX	FFD6		//
+Lminusdivi,	HEX	FFD1		//
+LMinusX,		HEX	FFA8
+
+
+
+//function that gets the number inputs from the user and put it in a var
+getnumber,	HEX	0
+		STA	Mnummode
+Start,		LDA	Mnummode
+		SZA
+		BUN	Secondprint
+		LDA	FirstA
+		BSA	Puts
+		BUN	Afterprint
+Secondprint,	LDA	SecondA
+		BSA	Puts		
+Afterprint,	CLA			
+		STA	Flag 		// Flag =0;
+		STA	num		// num = 0;
+Input_LoopL,	SKI 			// Repeat
+BUN 	Input_LoopL	// Until (FGI == 1) i.e. i/p available at KB
+		INP			//
+		STA	cc		//
+		CMA			//
+		INC			//
+		ADD	CR		// While ( (cc = inputchar()) # CR)
+		SZA			//
+		BUN	ContinueL3	//
+		BUN	End_loopL	//
+ContinueL3,	LDA	cc		// DO
+		CMA			//
+		INC			//
+		ADD	Sign_asciiL	//
+		SZA			// 	IF (cc == Sign_asciiL)
+		BUN	ContinueL	//
+		BUN	Then		//
+Then,		LDA	Flag		// 	THEN   Flag++; 
+		INC			//
+		STA	Flag		// 		
+		LDA	Sign_asciiL	//
+EchoL1, 		SKO 			// 	
+BUN 	EchoL1		// 	
+OUT 			//
+			// 	
+BUN	Input_LoopL	//
+ContinueL,	LDA	cc		//
+EchoL, 		SKO 			// 		Repeat	
+BUN 	EchoL		// 		Until (FGO == 0) i.e. i/p available at KB	
+OUT 			//
+Numcheck,	LDA	cc
+		ADD	MAsciimax
+		SPA			//	IF (cc > Asciimax) 
+		BUN	Numcheck2	//		
+		BUN	Error		//	THEN goto printf("error");
+Numcheck2,	LDA	cc
+		ADD	MAsciimin
+		SNA
+		BUN	ContinueL1
+		BUN	Error
+Error,		LDA	cc
+		STA	Errorptrnum I
+		LDA	Error_digit_print
+		BSA	Puts
+		BUN	Start							
+ContinueL1,	LDA	num		//
+		CLE	
+		CIL			//
+		CIL			//
+		CIL			//
+		ADD	num		//
+		ADD	num		//
+		ADD	cc		//
+		ADD	Mascii_Offset	//
+		STA	num		// 	ELSE num = num * 10 + cc - 30H;
+					//	FI;
+		BUN	input_LoopL	// OD
+End_loopL,	LDA	CR
+EchoL2, 		SKO 			// Repeat	
+BUN 	EchoL2		// Until (FGO == 0) i.e. i/p available at KB	
+OUT 			//
+LDA	Flag		// IF (Flag ==1)
+SZA			//
+BUN	TurnMinus	//
+BUN	ContinueL2	//
+TurnMinus,	LDA	num		// THEN num = num * -1;
+		CMA			//
+		INC			//
+		STA	num		//
+					// FI;
+ContinueL2,	LDA	num		//
+BUN	getnumber I	// return (Num);
+
+
+
+//
+Num,		DEC	0
+cc,		DEC	0
+CR,		HEX	D
+Mascii_Offset,	HEX	-30
+Sign_asciiL, 	HEX 	2D
+MAsciimax,	HEX	FFC7
+MAsciimin,	HEX	FFD0
+Errorptrnum,	HEX	448
+Mnummode,	DEC	0		
+Flag,		DEC	0
+
+//print function that outputs strings till it's encounter a 0 in the string
+Puts,		HEX	0
+		STA	LPTR
+LpLoop,		LDA	LPTR I
+		SZA			// IF (LPTR == 0)
+		BUN	Output_Loop
+		BUN	LpEndLoop			
+Output_Loop, 	SKO 			// 
+BUN 	Output_Loop	// 
+OUT 			// 
+ISZ	LPTR
+BUN	LpLoop
+LpEndLoop, 	BUN	Puts I		//
+
+		
+// puts() data
+LPTR,		HEX	0		//
+
+PutSignedInt,	HEX	0
+		STA	Number		//
+		LDA	Power		//
+		STA	PowerPtr
+		LDA	LLZero
+		STA	flagint
+		LDA	Number
+		AND	Mask		//
+		SZA			// IF ((Number && Mask) # 0)
+		BUN	MinusL		//
+		BUN	Continue		//
+MinusL,		LDA	Sign_ascii		// THEN
+		BSA	Puts2		// 	output ("-");
+		LDA	Number		//
+		CMA			//
+		INC			//
+		STA	Number		// 	Number = Number * -1;
+					// FI;
+Continue,		CLA			// 
+		STA	Count		// Count = 0;
+Out_Loop,	LDA	Count		//
+		ADD	Minusfour	//
+		SNA			// While (Count < 4)
+		BUN	End_LoopL2	//
+		CLA			// DO
+		STA	Digit		// 	Digit = 0;
+		LDA	PowerPtr I	//
+		STA	Divisor		// 	Divisor = * PowerPtr;
+Dividing,		LDA	Divisor		//
+		CMA			//
+		INC			//
+		ADD	Number		//
+		SNA			//	While (Number - Divisor   >=  0)
+		BUN	Continue2	//
+		BUN	Zerocheck	//
+Continue2,	STA	Number		//	DO	Number = Number - Divisor;   	
+		ISZ	Digit		//		Digit++;
+		BUN	Dividing		//	OD
+Zerocheck,	LDA	Flagint
+		SZA	
+BUN	Endloop2
+LDA	Digit
+SZA
+BUN	BeforeEloop2
+BUN	Zero
+BeforeEloop2,	ISZ	Flagint
+Endloop2,	LDA	Digit		//
+ADD	ascii_Offset	//
+		BSA	Puts2		//	Output(Digit);      
+Zero,		ISZ	PowerPtr		//	PowerPtr++;
+		ISZ	Count		//	Count++;
+		BUN	Out_Loop	// OD
+End_LoopL2,	LDA	Number		//
+		ADD	ascii_Offset	//
+		BSA	Puts2		// Output(Number);     
+		LDA 	LLCR
+		BSA	Puts2
+		BUN	putSignedInt I
+
+//outputs a visible number on the screen
+// PutSignedInt,
+Number,		DEC	0
+Minusfour,	DEC	-4
+Count,		DEC	0
+Digit,		DEC	0
+Divisor,		DEC	0
+Power,		HEX	140
+PowerPtr,	HEX	0
+Sign_ascii, 	HEX 	2D 		// the "-" character
+ascii_Offset, 	HEX 	30 
+LLCR,		HEX	D
+Mask,		HEX	8000
+Flagint,		DEC	0
+LLZero,		DEC	0
+					// digit to ascii representation offset
+		ORG	140
+Power10,		DEC	10000
+		DEC	1000
+		DEC	100
+		DEC	10
+
+
+//prints only 1 variable, prints what it receives
+Puts2,		HEX	0
+Output_Loop2, 	SKO 			// 
+BUN 	Output_Loop2	// 
+OUT 			// 
+		BUN	Puts2 I		//
+
+
+
+//ADD function, connecting between 2 numbers, and sending the result to print function
+ADDFUNC,	HEX	0		//	
+		BSA	POP		//
+		STA	ADDVAR1	//
+		BSA	POP		//
+		STA	ADDVAR2
+		CLE
+		ADD	ADDVAR1	//
+		STA	ADDRES		
+		LDA	ADDVAR1
+		BSA	PUSH
+		LDA	ADDVAR2
+		BSA	PUSH
+		LDA	ADDRES
+		BSA	PUSH
+		BSA	OverUnder
+		SZA
+		BUN	ADDEND
+		LDA	EqualA
+		BSA	Puts
+		LDA	ADDRES
+		BSA	PutSignedInt
+ADDEND,		BUN	ADDFUNC I	//
+//ADDFUNC DATA	
+ADDVAR1,	DEC	0		//
+ADDVAR2,	DEC	0		//
+ADDRES,		DEC	0		//
+
+
+//SUB function, subtracting between 2 numbers, and sending the result to print function
+SUBFUNC,	HEX	0		//
+		BSA	POP		//
+		CMA			//
+		INC			//
+		STA	SUBVAR1		//
+		BSA	POP		//
+		STA	SUBVAR2		//
+		ADD	SUBVAR1		//
+		CLE			//
+		STA	SUBRES
+		LDA	SUBVAR1
+		BSA	PUSH
+		LDA	SUBVAR2
+		BSA	PUSH
+		LDA	SUBRES
+		BSA	PUSH
+		BSA	OverUnder
+		SZA
+		BUN	SUBEND
+		LDA	EqualA
+		BSA	Puts
+		LDA	SUBRES
+		BSA	PutSignedInt
+SUBEND,		BUN	SUBFUNC I	//
+
+
+
+//SUBFUNC DATA	
+SUBVAR1,	DEC	0		//
+SUBVAR2,	DEC	0		//
+SUBRES,		DEC	0		//
+
+
+//checks if there's overflow or underflow, and if there is… it prints Over/Under and sends 1 or 0… if it's 0 so the ADD/SUB function will also print the number (aka no OU) and if sends 1 there is OU and the ADD/RES functions will not print the number
+OverUnder,	HEX	0
+		BSA	POP
+		STA	R
+		BSA	POP
+		STA	Y
+		BSA	POP
+		STA	X
+		CLA
+		STA	OverflowF
+		STA	UnderflowF	
+		STA	V
+
+LDA 	X
+CIL
+CLA
+CIL
+STA 	MSB_X
+LDA 	Y
+CIL
+CLA
+CIL 
+CMA
+INC
+ADD 	MSB_X
+SZA 
+BUN 	Exit 
+BUN 	Test_Rmsb
+Test_Rmsb, 	LDA 	R 
+CIL
+CLA
+CIL
+STA 	MSB_R 
+CMA
+INC
+ADD	 MSB_X
+SZA 
+BUN 	Set_OUverflow
+BUN 	Exit
+Set_OUverflow, 	LDA 	OUFlowFlag 
+STA 	V
+LDA 	MSB_R 
+ADD 	Minus_1
+SZA
+BUN 	UnderFLow
+OverFlow, 	LDA 	OUFlowFlag 
+STA 	OverflowF 
+BUN 	Printstage 
+UnderFlow, 	LDA 	OUFlowFlag
+STA 	UnderflowF 
+Printstage, 	LDA	OverflowF
+		SZA
+		BUN	Overprint
+		LDA	UnderflowF
+		SZA
+		BUN	Underprint
+		BUN	Exit
+Overprint,	LDA	OverA
+		BSA	Puts
+		BUN	Exit
+Underprint,	LDA	UnderA
+		BSA	Puts
+		BUN	Exit
+Exit,		LDA	V
+BUN	OverUnder I	
+
+	
+					 
+
+// Data
+Minus_1, 	DEC 	-1
+X, 		DEC 	-32768
+Y, 		DEC 	-1
+R, DEC 0
+MSB_X, 		DEC 	0 // temp storage for msb of X
+MSB_R, 		DEC 	0 // temp storage for msb of R
+OUFlowFlag, 	DEC 	1 
+V, 		DEC 	0 
+OverflowF, 	DEC 	0 // overflow Flag
+UnderflowF, 	DEC 	0 // underflow Flag
+
+
+//multiplication function, multiplying 2 numbers, sends the result to a printing function 
+MULTFUNC,	HEX	0
+//INIT
+		CLA			//
+		CLE			//
+		STA	RESULTMULT	//
+		STA	DIGCOUNTMULT	//
+		STA	FLAGMULT	//
+
+//Gets first num cheks if negative
+		BSA	POP		//
+		STA	MULTIPLIER	//
+		CIL			//
+		SZE		   	//
+		BUN	NEG1		//
+		BUN	MULTCONT1	//
+
+//If it is flag=1 and num = !num
+NEG1,		LDA	FLAGMULT	//
+		INC			//
+		STA	FLAGMULT	//
+		LDA	MULTIPLIER	//
+		CMA			//
+		INC			//
+		STA	MULTIPLIER	//
+
+//Gets 2nd num checks if negative
+MULTCONT1,	BSA	POP		//
+		STA	MULTIPLICAND	//
+		CLE			//
+		CIL			//
+		SZE			//
+		BUN	NEG2		//
+		BUN	LOOPMULT	//
+
+//If so num=!num also checks if the flas was 1 if so its now 0 ,else its 1
+NEG2,		LDA	FLAGMULT	//
+		SZA			//
+		BUN	FNOT0		//
+		BUN	FIS0		//
+FNOT0,		CLA			//
+		STA	FLAGMULT	//
+FIS0,		LDA	MULTIPLICAND	//
+		CMA			//
+		INC			//
+		STA	MULTIPLICAND	//
+		CLE			//
+
+//WHILE (DigitCount < 8)  shift_right(multiplier);				
+LOOPMULT,	LDA	BREAKCONDMULT	//
+		CMA			//
+		INC			//
+		ADD	DIGCOUNTMULT	//
+		SNA			//
+		BUN 	MULTEND	//
+		CLE			//
+		LDA	MULTIPLIER	//
+		CIR			//
+		STA	MULTIPLIER	//
+		SZE			//
+		BUN	MULTIT		//
+		BUN	MULTCONT2	//
+
+//IF E==1 THEN R = R + multiplicand; 
+MULTIT,		LDA	RESULTMULT	//
+		ADD	MULTIPLICAND	//
+		STA	RESULTMULT	//
+
+//SHIFT multiplicand left , DigitCount++;
+MULTCONT2,	LDA	MULTIPLICAND	//
+		CIL			//
+		STA	MULTIPLICAND	//
+		LDA	DIGCOUNTMULT	//
+		INC			//
+		STA	DIGCOUNTMULT	//
+		BUN	LOOPMULT	//
+
+//End of the loop, now checks the flag
+MULTEND,	LDA	FLAGMULT	//
+		SZA			//
+		BUN	RIS!R		//
+		BUN	RISR		//
+
+//IF its up R=!R
+RIS!R,		LDA	RESULTMULT	//
+		CMA			//
+		INC			//
+		STA	RESULTMULT	//
+
+//Send it back in 
+RISR,		LDA	EqualA
+		BSA	Puts
+LDA	RESULTMULT	//
+		BSA	PutSignedInt
+		BUN	MULTFUNC I	//
+
+//MULTFUNC DATA
+MULTIPLIER,	DEC	0		//
+MULTIPLICAND,	DEC	0		//
+RESULTMULT,	DEC	0		//
+DIGCOUNTMULT,	DEC	0		//
+BREAKCONDMULT,	DEC	8		//
+FLAGMULT,	DEC	0		//
+
+// Division function, diving between 2 numbers, sends the result for printing functions and also knows to detect the remainder
+DEVFUNC,	HEX	0
+//INIT
+		LDA	ERRHEAD
+		STA	ERRPTR
+		CLA
+		CLE
+		STA	FLAGDEV
+		STA	RESULTDEV
+		BSA	POP
+		STA	DEVISOR
+		BSA	POP
+		STA	DEVIDENT
+		
+//Checks if the 1st number is negative or postive	
+		LDA	DEVIDENT
+		CIL
+		SZE
+		BUN	NEGDEV1
+		BUN	DEVCONT1
+
+//If so num=!num and flag=1
+NEGDEV1,	LDA	DEVIDENT
+		CMA
+		INC
+		STA	DEVIDENT
+		LDA	FLAGDEV
+		INC
+		STA	FLAGDEV
+		
+//Checks if the 2nd number is 0
+DEVCONT1,	CLE
+		LDA	DEVISOR
+		SZA
+		BUN 	DEVCONT2
+
+//If so prints error!
+ERRLOOP,	LDA	Divide_error
+		BSA	Puts
+		BUN	DEVFUNC I
+		
+
+//Checks if its negative or positive also cheks the if the flag is 0 
+DEVCONT2,	CIL
+		SZE
+		BUN	NEGDEV2
+		BUN	DEVLOOP
+
+//If so num=!num
+NEGDEV2,	LDA	DEVISOR
+		CMA
+		INC
+		STA	DEVISOR
+		LDA	FLAGDEV
+		SZA
+		BUN	DFIS!0
+		BUN	DFIS0
+
+//If the flas was 1 its 0 else its 1
+DFIS!0,		CLA
+		STA	FLAGDEV
+		BUN	DEVLOOP
+DFIS0,		LDA	FLAGDEV
+		INC
+		STA	FLAGDEV
+
+//While(num=num-dev>=0)
+DEVLOOP,	LDA	DEVISOR
+		CMA
+		INC
+		ADD	DEVIDENT
+
+		SNA
+		BUN	DEVCONT3
+		BUN	DEVEND
+
+//Result++
+DEVCONT3,	STA	DEVIDENT
+		LDA	RESULTDEV
+		INC	
+		STA	RESULTDEV
+		BUN	DEVLOOP
+
+//check flag
+DEVEND,		LDA	FLAGDEV
+		SZA
+		BUN	DEVRIS!R
+		BUN	DEVRISR
+
+//if flag was 1 R= -R
+DEVRIS!R,	LDA	RESULTDEV
+		CMA
+		INC
+		STA	RESULTDEV
+
+//Sent it back
+DEVRISR, 		LDA	EqualA
+		BSA	Puts	
+		LDA	RESULTDEV
+		BSA	PutSignedInt
+		LDA	Remainder
+		BSA	Puts	
+		LDA	DEVIDENT
+		BSA	PutSignedInt
+		BSA	DEVFUNC	 I
+//Devfunc data
+ERRHEAD,	HEX	600
+ERRPTR,		DEC	0
+FLAGDEV,	DEC	0
+RESULTDEV,	DEC	0
+DEVIDENT,	DEC	0
+DEVISOR,		DEC	0
+
+
+//Stack functions
+PUSH,		HEX	0	         
+		STA	SPtr  I           
+		ISZ	SPtr  	          
+		BUN    	Push I    
+
+POP,	  	HEX	0	    
+		LDA	SPtr	      
+		CMA		      
+		INC			
+		CMA			
+		STA	SPtr	      
+		LDA	SPtr I		
+		BUN 	POP I 
+//Stack Data
+SPtr, 		HEX	300
+ORG	300
+Stack,   		DEC	0
+		DEC	0
+		DEC	0
+		DEC	0
+		DEC	0
+StackEnd, 	DEC	0
+
+
+
+//String area, all the strings that are needed to print are here.
+// I have put them here as putting each and every one of them in the middle of the program causes memory errors
+ByeA,		HEX	400			//Bye
+		ORG	400
+HEX	42
+		HEX	79
+		HEX	65
+		HEX	0
+
+OPerror_print,	HEX	410			//ERROR: invalid input (for the OP)
+		ORG	410		
+HEX	45  
+		HEX	52  
+		HEX	52  
+		HEX	4F  
+		HEX	52 
+		HEX	3A
+		HEX	20
+		HEX	69
+		HEX	6E
+		HEX	76
+		HEX	61
+		HEX	6C
+		HEX	69
+		HEX	64
+		HEX	20
+		HEX	69
+		HEX	6E
+		HEX	70
+		HEX	75
+		HEX	74
+		HEX	D		
+HEX	0
+
+Opprint,		HEX	430			// op:
+		ORG	430	
+HEX	4F
+		HEX	70
+		HEX	3A
+		HEX	20
+		HEX	0
+Error_digit_print,	HEX	440			// ERROR: x is not a digit (digit is at  HEX 449 DO a pointer for it)
+		ORG	440	
+HEX	D
+		HEX	45
+		HEX	52
+		HEX	52
+		HEX	4F
+		HEX	52
+		HEX	3A
+		HEX	20
+		HEX	-1
+HEX	20	
+		HEX	69
+		HEX	73
+		HEX	20
+		HEX	6E
+		HEX	6F
+		HEX	74
+		HEX	20
+		HEX	61
+		HEX	20
+		HEX	64
+		HEX	69
+		HEX	67
+		HEX	69
+		HEX	74
+		HEX	D
+		HEX	0
+
+FirstA,		HEX	470			// 1st: 
+		ORG	470	
+HEX	31
+		HEX	73
+		HEX	74
+		HEX	3A
+		HEX	20
+		HEX	0
+SecondA,		HEX	480			//2nd: 
+		ORG	480
+HEX	32
+		HEX	6E
+		HEX	64
+		HEX	3A
+		HEX	20
+		HEX	0
+EqualA,		HEX	490			//= 
+		ORG	490
+HEX	3D
+		HEX	20
+		HEX	0
+OverA,		HEX	500			//ERROR: Overflow
+		ORG	500
+HEX	45  
+		HEX	52  
+		HEX	52  
+		HEX	4F  
+		HEX	52 
+		HEX	3A
+		HEX	20
+		HEX	4F
+		HEX	76	
+		HEX	65
+		HEX	72
+		HEX	66
+		HEX	6C
+		HEX	6F	
+		HEX	77
+		HEX	D
+		HEX	0
+UnderA,		HEX	520			//ERROR: Underflow
+		ORG	520
+HEX	45  
+		HEX	52  
+		HEX	52  
+		HEX	4F  
+		HEX	52 
+		HEX	3A
+		HEX	20
+		HEX	55
+		HEX	6E	
+		HEX	64
+		HEX	65
+		HEX	72
+		HEX	66
+		HEX	6C
+		HEX	6F	
+		HEX	77
+		HEX	D
+		HEX	0
+
+Divide_error,	HEX	540			// ERROR: Divison by 0
+		ORG	540
+HEX	45  
+		HEX	52  
+		HEX	52  
+		HEX	4F  
+		HEX	52 
+		HEX	3A
+		HEX	20
+		HEX	44
+		HEX	69
+		HEX	76
+		HEX	69
+		HEX	73
+		HEX	6F
+		HEX	6E
+		HEX	20
+		HEX	62
+		HEX	79
+		HEX	20
+		HEX	30
+		HEX	D	
+		HEX	0
+	
+Remainder,	HEX	560			//Reminder: x
+		ORG	560
+HEX	8
+		HEX	20
+		HEX	52
+		HEX	65
+		HEX	6D
+		HEX	61
+		HEX	69
+		HEX	6E
+		HEX	64
+		HEX	65
+		HEX	72
+		HEX	3A
+		HEX	20
+		HEX	0
+			
+IntroA,		HEX	600			// Input is terminated by <Enter>. To exit program type X for Op - instead of: + - * /
+		ORG	600	
+HEX	49
+		HEX	6E
+		HEX	70
+		HEX	75
+		HEX	74
+		HEX	20
+		HEX	69
+		HEX	73
+		HEX	20
+		HEX	74
+		HEX	65
+		HEX	72
+		HEX	6D
+		HEX	69
+		HEX	6E
+		HEX	61
+		HEX	74
+		HEX	65
+		HEX	64
+		HEX	20
+		HEX	62
+		HEX	79
+		HEX	20
+		HEX	3C
+		HEX	45
+		HEX	6E
+		HEX	74
+		HEX	65
+		HEX	72
+		HEX	3E
+		HEX	2E
+		HEX	20
+		HEX	54
+		HEX	6F
+		HEX	20
+		HEX	65
+		HEX	78
+		HEX	69
+		HEX	74
+		HEX	20
+		HEX	70
+		HEX	72
+		HEX	6F
+		HEX	67
+		HEX	72
+		HEX	61
+		HEX	6D
+		HEX	20
+		HEX	74
+		HEX	79
+		HEX	70
+		HEX	65
+		HEX	20
+		HEX	58
+		HEX	20
+		HEX	66
+		HEX	6F
+		HEX	72
+		HEX	20
+		HEX	4F
+		HEX	70
+		HEX	20
+		HEX	2D
+		HEX	20
+		HEX	69
+		HEX	6E
+		HEX	73
+		HEX	74
+		HEX	65
+		HEX	61
+		HEX	64
+		HEX	20
+		HEX	6F
+		HEX	66
+		HEX	3A
+		HEX	20
+		HEX	2B
+		HEX	20
+		HEX	2D
+		HEX	20
+		HEX	2A
+		HEX	20
+		HEX	2F
+		HEX	20
+		HEX	D	
+		HEX	0
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
