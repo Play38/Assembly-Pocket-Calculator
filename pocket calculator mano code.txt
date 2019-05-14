@@ -1,6 +1,3 @@
-//By Ofir Cohen 307923615
-//And Omer Guttman 313432213
-
 //main
 		LDA	IntroA
 		BSA	Puts	
@@ -424,7 +421,7 @@ SUBVAR2,	DEC	0		//
 SUBRES,		DEC	0		//
 
 
-//checks if there's overflow or underflow, and if there is… it prints Over/Under and sends 1 or 0… if it's 0 so the ADD/SUB function will also print the number (aka no OU) and if sends 1 there is OU and the ADD/RES functions will not print the number
+//checks if there's overflow or underflow, and if there isâ€¦ it prints Over/Under and sends 1 or 0â€¦ if it's 0 so the ADD/SUB function will also print the number (aka no OU) and if sends 1 there is OU and the ADD/RES functions will not print the number
 OverUnder,	HEX	0
 		BSA	POP
 		STA	R
